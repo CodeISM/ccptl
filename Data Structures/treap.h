@@ -5,7 +5,7 @@ class treap {
   private:
     using index = unsigned; // syntactic sugar to indentify indexes, easier to read
     struct node {
-        index l = SIZE + 1, r = SIZE + 1; // initialized with invalid indexes
+        index l = invalid(), r = invalid(); // initialized with invalid indexes
         int val, y, c = 1;
         int sum;
 
@@ -31,12 +31,12 @@ class treap {
     friend treap merge(treap l, treap r);
     friend treap ins(treap t, treap n, int pos);
     static bool valid(index i) { return i <= SIZE; } // checks whether treap is valid
-    static treap invalid() { return SIZE; }          // returns invalid treap
+    static treap invalid() { return SIZE + 1; }      // returns invalid treap
     operator index() { return _root; }               // used for typecasting treap to index
 
-  private:
+    //private:
     const static int SIZE = 1e6;
-    index _root = SIZE + 1;
+    index _root = invalid();
     static std::array<node, SIZE + 1> _buf;
     static index _top;
 
@@ -52,10 +52,12 @@ treap merge(treap l, treap r) {
     else if (!treap::valid(r))
         return l;
     else if (l.data.y > r.data.y) {
+        DDD("Merging", l._root, r._root);
         l.data.r = merge(l.data.r, r);
         l.data.recalc();
         return l;
     } else {
+        DDD("Merging", r._root, l._root);
         r.data.l = merge(l, r.data.l);
         r.data.recalc();
         return r;
@@ -64,16 +66,15 @@ treap merge(treap l, treap r) {
 
 pair<treap, treap> split(treap t, int k) {
     if (!treap::valid(t)) return {treap::invalid(), treap::invalid()};
-    treap::node &n = treap::_buf[t];
-    if (k <= n.val) { // for lower_bound(k)
-        auto pa = split(n.l, k);
-        n.l = pa.second;
-        n.recalc();
+    if (k <= t.data.val) { // for lower_bound(k)
+        auto pa = split(t.data.l, k);
+        t.data.l = pa.second;
+        t.data.recalc();
         return {pa.first, t};
     } else {
-        auto pa = split(n.r, k);
-        n.r = pa.first;
-        n.recalc();
+        auto pa = split(t.data.r, k);
+        t.data.r = pa.first;
+        t.data.recalc();
         return {t, pa.second};
     }
 }
@@ -82,4 +83,3 @@ treap ins(treap t, treap n, int pos) {
     auto pa = split(t, pos);
     return merge(merge(pa.first, n), pa.second);
 }
-
