@@ -20,8 +20,13 @@ class treap {
     };
 
   public:
-    treap() : _root{_top++} {}
-    treap(index i) : _root{i} {} // used for typecasting index to treap
+    treap() : _root{_top}, data{_buf[_top]} { _top++; }
+    treap(index i) : _root{i}, data{_buf[_top]} {} // used for typecasting index to treap
+    treap &operator=(const treap &t) {
+        _root = t._root;
+        data = t.data;
+        return *this;
+    }
     friend pair<treap, treap> split(treap n, int k);
     friend treap merge(treap l, treap r);
     friend treap ins(treap t, treap n, int pos);
@@ -29,28 +34,30 @@ class treap {
     static treap invalid() { return SIZE; }          // returns invalid treap
     operator index() { return _root; }               // used for typecasting treap to index
 
-    int &val = _buf[_root].val; // storing values in treap
-    int &sum = _buf[_root].sum; // storing sum, specific to this problem
-
   private:
     const static int SIZE = 1e6;
     index _root = SIZE + 1;
     static std::array<node, SIZE + 1> _buf;
     static index _top;
+
+  public:
+    node &data; // storing values in treap
 };
 treap::index treap::_top = 0;
+array<treap::node, treap::SIZE + 1> treap::_buf;
 
 treap merge(treap l, treap r) {
-    if (!treap::valid(l)) return r;
-    if (!treap::valid(r)) return l;
-    treap::node &left = treap::_buf[l], &right = treap::_buf[r];
-    if (left.y > right.y) {
-        left.r = merge(left.r, r);
-        left.recalc();
+    if (!treap::valid(l))
+        return r;
+    else if (!treap::valid(r))
+        return l;
+    else if (l.data.y > r.data.y) {
+        l.data.r = merge(l.data.r, r);
+        l.data.recalc();
         return l;
     } else {
-        right.l = merge(l, right.l);
-        right.recalc();
+        r.data.l = merge(l, r.data.l);
+        r.data.recalc();
         return r;
     }
 }
@@ -75,3 +82,4 @@ treap ins(treap t, treap n, int pos) {
     auto pa = split(t, pos);
     return merge(merge(pa.first, n), pa.second);
 }
+
