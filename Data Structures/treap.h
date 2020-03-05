@@ -21,7 +21,7 @@ class treap {
 
   public:
     treap() : _root{_top}, data{_buf[_top]} { _top++; }
-    treap(index i) : _root{i}, data{_buf[_top]} {} // used for typecasting index to treap
+    treap(index i) : _root{i}, data{_buf[i]} {} // used for typecasting index to treap
     treap &operator=(const treap &t) {
         _root = t._root;
         data = t.data;
@@ -35,7 +35,7 @@ class treap {
     operator index() { return _root; }               // used for typecasting treap to index
 
     //private:
-    const static int SIZE = 1e6;
+    const static int SIZE = 2e5;
     index _root = invalid();
     static std::array<node, SIZE + 1> _buf;
     static index _top;
@@ -52,12 +52,10 @@ treap merge(treap l, treap r) {
     else if (!treap::valid(r))
         return l;
     else if (l.data.y > r.data.y) {
-        DDD("Merging", l._root, r._root);
         l.data.r = merge(l.data.r, r);
         l.data.recalc();
         return l;
     } else {
-        DDD("Merging", r._root, l._root);
         r.data.l = merge(l, r.data.l);
         r.data.recalc();
         return r;
