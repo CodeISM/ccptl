@@ -3,14 +3,13 @@ class treap {
     // whose _top indicates the next free position to create a treap node
     // a treap::node holds data and treap object holds the index to the node
   private:
-    const static int SIZE = 1e6;
     using index = unsigned; // syntactic sugar to indentify indexes, easier to read
     struct node {
         index l = SIZE + 1, r = SIZE + 1; // initialized with invalid indexes
         int val, y, c = 1;
         int sum;
 
-        node(int val) : val(val), y(rand()), sum(val) {}
+        node(int val = 0) : val(val), y(rand()), sum(val) {}
 
         int cnt(index n) { return valid(n) ? _buf[n].c : 0; }
         int getSum(index n) { return valid(n) ? _buf[n].sum : 0; }
@@ -25,17 +24,16 @@ class treap {
     treap(index i) : _root{i} {} // used for typecasting index to treap
     friend pair<treap, treap> split(treap n, int k);
     friend treap merge(treap l, treap r);
-    static bool valid(index i) { return i <= SIZE; }
-    static index invalid() { return SIZE; }
-    operator index() { return _root; } // used for typecasting treap to index
+    friend treap ins(treap t, treap n, int pos);
+    static bool valid(index i) { return i <= SIZE; } // checks whether treap is valid
+    static treap invalid() { return SIZE; }          // returns invalid treap
+    operator index() { return _root; }               // used for typecasting treap to index
 
-    treap ins(treap t, treap n, int pos) {
-        auto pa = split(t, pos);
-        return merge(merge(pa.first, n), pa.second);
-    }
-    int &val = _buf[_root].val;
+    int &val = _buf[_root].val; // storing values in treap
+    int &sum = _buf[_root].sum; // storing sum, specific to this problem
 
   private:
+    const static int SIZE = 1e6;
     index _root = SIZE + 1;
     static std::array<node, SIZE + 1> _buf;
     static index _top;
@@ -71,4 +69,9 @@ pair<treap, treap> split(treap t, int k) {
         n.recalc();
         return {t, pa.second};
     }
+}
+
+treap ins(treap t, treap n, int pos) {
+    auto pa = split(t, pos);
+    return merge(merge(pa.first, n), pa.second);
 }
