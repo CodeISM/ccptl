@@ -16,6 +16,7 @@
  *                   b.query(10);   // return op(b[1], b[2], ... , b[10])
  *                   b.update(pos, diff); // tree[pos] = op(tree[pos], diff)
  *                   b.lower_bound(target); // returns first occurence with prefix value as target
+ * Status: Tested (codeforces/1354/D: 82693040)
  */
 
 template <typename T>
