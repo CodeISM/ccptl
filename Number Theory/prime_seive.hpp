@@ -20,7 +20,7 @@ vector<int> prime_seive() {
             bs[j] = 1;
     }
     for (i = (i + 1) / 2; i <= end; ++i)
-        if (!bs[i]) ret.push_back(i);
+        if (!bs[i]) ret.push_back(2 * i - 1);
     ret.shrink_to_fit();
     return ret;
 }
