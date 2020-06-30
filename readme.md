@@ -34,6 +34,7 @@ Note: A modern C++ compiler with support of `c++14` or later is required althoug
 
 ### Dynamic Programming
 ### String Algorithms
+- [Suffix Array and LCP](https://github.com/CodeISM/ccptl/blob/master/Strings/suffix_array.h): Contructs Suffix Array and LCP Array in linear space and time.
 ### Misc
 - [Modular Arithmetic](https://github.com/CodeISM/ccptl/blob/master/Misc/modular.h): A convenient and efficient wrapper of plain `int` for modular arithmetic. Functionality provided: add, subtract, multiply, divide, exponentiation, inverse and IO.
 - [Ska Sort](https://github.com/CodeISM/ccptl/blob/master/Misc/ska_sort.h): A much faster (2x w.r.t. std::sort) sorting algorithm.
