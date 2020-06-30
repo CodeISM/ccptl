@@ -2,11 +2,11 @@
  * Time Complexity: Suffix Array: O(N + Character_Set_Size) time and space // 128 --- ASCII
  *                  LCP: O(N) time and space
  * Usage:
- *       1. Suffix Array:
+ *       1. Suffix Array (returns s.size() elements, NOT considering 0-length/empty suffix)
  *             auto sa = suffix_array(s); // s is the input string with ASCII characters
- *             auto sa_wide_char = suffix_array(s, LIM); // LIM = max(s[i]) + 2, s is the string with arbitary big characters
+ *             auto sa_wide_char = suffix_array(s, LIM); // LIM = max(s[i]) + 2, s is the string with arbitary big characters.
  *       2. LCP:
- *            auto lcp = LCP(s, suffix_array(s)); // returns s.size() elements, where lcp[i]=LCP(sa[i], sa[i])
+ *            auto lcp = LCP(s, suffix_array(s)); // returns s.size() elements, where lcp[i]=LCP(sa[i], sa[i+1])
  * Status: Tested (DMOJ: ccc03s4, SPOJ: SARRAY (100pts), Yosupo's: Suffix Array & Number of Substrings, CodeForces EDU
  */
 
