@@ -7,7 +7,7 @@
  *             auto sa_wide_char = suffix_array(s, LIM); // LIM = max(s[i]) + 2, s is the string with arbitary big characters
  *       2. LCP:
  *            auto lcp = LCP(s, suffix_array(s)); // returns s.size() elements, where lcp[i]=LCP(sa[i], sa[i])
- * Status: Tested (DMOJ: ccc03s4, SPOJ: SARRAY (100pts), Yosupo's: Suffix Array)
+ * Status: Tested (DMOJ: ccc03s4, SPOJ: SARRAY (100pts), Yosupo's: Suffix Array & Number of Substrings, CodeForces EDU
  */
 
 // Based on: Rickypon, https://judge.yosupo.jp/submission/10105
