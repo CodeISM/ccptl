@@ -2,7 +2,7 @@
 CodeISM Competitve Programming Template Library
 
 ## Aim
-The aim of this repository is to provide copy-pastable code snippets. Focus is more on efficiency/performance as opposed to readability.
+The aim of this repository is to provide copy-pastable code snippets which should be easy to modify to suit different problems. Focus is more on flexibility and efficiency/performance as opposed to readability.
 
 ## Usage
 Code snippets in a file are meant to be self sufficient.
