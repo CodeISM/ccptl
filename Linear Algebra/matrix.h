@@ -13,30 +13,29 @@
  */
 
 #include "Data Structures/dynamic_matrix.h"
+#include "Misc/modular.h"
+
 template <typename T>
 using matrix = dynamic_matrix<T>;
 
-template <typename T>
-matrix<T> operator+(const matrix<T> &a, const matrix<T> &b) {
-    matrix<T> ret(a.R, a.C);
-    scan(ret, a, b, plus<T>());
-    return ret;
-}
 template <typename T>
 matrix<T> operator+=(matrix<T> &a, const matrix<T> &b) {
     scan(a, a, b, plus<T>());
     return a;
 }
 template <typename T>
-matrix<T> operator-(const matrix<T> &a, const matrix<T> &b) {
-    matrix<T> ret(a.R, a.C);
-    scan(ret, a, b, minus<T>());
-    return ret;
-}
-template <typename T>
 matrix<T> operator-=(matrix<T> &a, const matrix<T> &b) {
     scan(a, a, b, minus<T>());
     return a;
+}
+template <typename T> matrix<T> operator+(matrix<T> a, const matrix<T> &b) { return a += b; }
+template <typename T> matrix<T> operator-(matrix<T> a, const matrix<T> &b) { return a -= b; }
+template <typename T, typename F> // F must be a callable type, used as universal/forwaring reference
+void scan(matrix<T> &lhs, const matrix<T> &op1, const matrix<T> &op2, F &&f) {
+    // assert(op1.R == op2.R && op1.C == op2.C);
+    for (int32_t i = 0; i < lhs.R; ++i)
+        for (int32_t j = 0; j < lhs.C; ++j)
+            lhs(i, j) = f(op1(i, j), op2(i, j));
 }
 template <typename T>
 matrix<T> transpose(const matrix<T> &a) {
@@ -49,16 +48,10 @@ matrix<T> transpose(const matrix<T> &a) {
                     ret(l, k) = a(k, l);
     return ret;
 }
-template <typename T, typename F> // F must be a callable type, used as universal/forwaring reference
-void scan(matrix<T> &lhs, const matrix<T> &op1, const matrix<T> &op2, F &&f) {
-    for (int32_t i = 0; i < lhs.R; ++i)
-        for (int32_t j = 0; j < lhs.C; ++j)
-            lhs(i, j) = f(op1(i, j), op2(i, j));
-}
 template <typename T>
-matrix<T> operator*(const matrix<T> &a, const matrix<T> &b) {
+enable_if_t<!is_modular<T>::value, matrix<T>> operator*(const matrix<T> &a, const matrix<T> &b) {
     matrix<T> tp = transpose(b);
-    int32_t x = a.R, y = a.C, z = b.C;
+    const int32_t x = a.R, y = b.R, z = b.C;
     matrix<T> ret(x, z);
     for (int32_t i = 0; i < x; ++i)
         for (int32_t j = 0; j < z; ++j)
@@ -66,30 +59,14 @@ matrix<T> operator*(const matrix<T> &a, const matrix<T> &b) {
                 ret(i, j) += a(i, k) * tp(j, k);
     return ret;
 }
-
+template <typename T> matrix<T> &operator*=(matrix<T> &a, const matrix<T> &b) { return a = a * b; }
 template <typename T>
-matrix<T> &operator*=(matrix<T> &a, const matrix<T> &b) { return a = a * b; }
-
-template <typename T>
-matrix<T> mexp(matrix<T> a, int64_t e) {
-    int32_t n = a.R; // assert(a.R == a.C);
-    matrix<T> ret(n, n, 0);
-    for (int i = 0; i < n; ++i)
-        ret(i, i) = 1;
-    while (e) {
-        if (e % 2) ret *= a;
-        a *= a, e >>= 1;
-    }
-    return ret;
-}
-// If you're not using matrix of "modular" int, this is not needed
-#include "Misc/modular.h"
-template <int MOD>
-matrix<Modular<MOD>> operator*(const matrix<Modular<MOD>> &a, const matrix<Modular<MOD>> &b) {
+enable_if_t<is_modular<T>::value, matrix<T>> operator*(const matrix<T> &a, const matrix<T> &b) {
     auto tp = transpose(b);
-    int32_t x = a.R, y = a.C, z = b.R;
-    matrix<Modular<MOD>> ret(x, z);
-    const uint64_t base = mexp(Modular<MOD>(2), 64).value;
+    const int32_t x = a.R, y = b.R, z = b.C;
+    matrix<T> ret(x, z);
+    const int MOD = a(0, 0).mod;
+    const uint64_t base = mexp(dmodular(2, a(0, 0).mod), 64).value;
     for (int32_t i = 0; i < x; ++i) {
         for (int32_t j = 0; j < z; ++j) {
             uint64_t s = 0;
@@ -102,5 +79,14 @@ matrix<Modular<MOD>> operator*(const matrix<Modular<MOD>> &a, const matrix<Modul
             ret(i, j) = ((s % MOD) + base * carry) % MOD;
         }
     }
+    return ret;
+}
+template <typename T> matrix<T> mexp(matrix<T> a, int64_t e) {
+    int32_t n = a.R; // assert(a.R == a.C);
+    matrix<T> ret(n, n, 0);
+    for (int i = 0; i < n; ++i)
+        ret(i, i) = 1;
+    for (; e; a *= a, e >>= 1)
+        if (e & 1) ret *= a;
     return ret;
 }
