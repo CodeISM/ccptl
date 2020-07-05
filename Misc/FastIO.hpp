@@ -95,4 +95,4 @@ struct Flusher {
         if (write_pos) fwrite(write_buf, 1, write_pos, stdout), write_pos = 0;
     }
 } flusher;
-/******************************** FAST IO STARTS *****************************/
+/******************************** FAST IO ENDS *****************************/
