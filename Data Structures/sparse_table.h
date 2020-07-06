@@ -18,10 +18,12 @@
 *       st(i,j); // to access element at ith row (out of logN rows) and jth column (out of N columns)
 * Status: Tested
 */
+
+#include "Data Structures/dynamic_matrix.h"
 template <typename T>
 struct compare_min {
     constexpr T operator()(const T &a, const T &b) const {
-        return a < b ? a : b;
+        return a < b ? a : b; // change this function (currently: minimum)
     }
 };
 template <typename T, class F = compare_min<T>>
@@ -33,12 +35,10 @@ class sparse_table {
             for (int i = 0; i + (1 << j) <= N; ++i)
                 table(j, i) = _op(table(j - 1, i), table(j - 1, i + (1 << (j - 1))));
     }
-
     T query_fast(int l, int r) { // 0-based interval: [l,r]
         int dep = 31 - __builtin_clz(r - l + 1);
         return _op(table(dep, l), table(dep, r - (1 << dep) + 1));
     }
-
     // O(log N)/query
     T query(int l, int r) { // 0-based interval: [l,r]
         T ans = table(0, l++);
@@ -50,7 +50,6 @@ class sparse_table {
         }
         return ans;
     }
-
   private:
     int32_t N, K; // K = ceil(log(N))
     dynamic_matrix<T> table;
