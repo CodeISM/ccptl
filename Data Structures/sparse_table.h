@@ -50,6 +50,7 @@ class sparse_table {
         }
         return ans;
     }
+
   private:
     int32_t N, K; // K = ceil(log(N))
     dynamic_matrix<T> table;
