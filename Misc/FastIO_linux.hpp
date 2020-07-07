@@ -1,18 +1,21 @@
-// Originally writted by Burundik1; Optimizations by madhur4127
-// NOTE: Last input character MUST end by a new line, otherwise it is UB
-// Examples:
-//       int n = read();
-//       string s = read<string>; // supported types in template -- char, ints (signed/unsigned, 32/64), string
-//       write(n, ' '); // prints 'n' and then a space
-//       write(s, '\n'); // supported types in template -- char, ints (signed/unsigned, 32/64), string
-
-/** Read */
-static const int buf_size = 1 << 16;
-static char buf[buf_size];
-static int len = 0, pos = 0;
-inline char getChar() {
-    if (__builtin_expect(pos == len, 0)) pos = 0, len = fread(buf, 1, buf_size, stdin);
-    return buf[pos++];
+// Original author: Burunduk1; Optimizations by madhur4127
+// Works only on Linux based systems. NOT on CodeForces.
+// See FastIO.hpp for usage
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <unistd.h>
+static struct input {
+    struct stat ip_stat;
+    char *ptr;
+    int pos, len;
+    input() {
+        fstat(0, &ip_stat);
+        pos = 0, len = ip_stat.st_size, ptr = (char *)mmap(NULL, len, PROT_READ, MAP_PRIVATE, 0, 0);
+    }
+} ip;
+char getChar() {
+    // assert(ip.pos < ip.len);
+    return ip.ptr[ip.pos++];
 }
 template <typename T = int> inline T read() {
     char s = 1, c = read<char>();
@@ -22,21 +25,22 @@ template <typename T = int> inline T read() {
         x = x * 10 + c - '0', c = getChar();
     return s == 1 ? x : -x;
 }
-template <>
-inline char read<char>() {
+template <> inline char read<char>() {
     char c = getChar();
     while (c <= 32)
         c = getChar();
     return c;
 }
-template <>
-inline string read<string>() {
-    string s;
-    for (char c = getChar(); c > ' '; c = getChar())
-        s += c;
-    return s;
+template <> inline string read<string>() {
+    read<char>();
+    int start = ip.pos - 1;
+    for (; ip.ptr[ip.pos] > ' '; ++ip.pos)
+        ;
+    return string(ip.ptr + start, ip.ptr + ip.pos);
 }
+
 /** Write */
+static const int buf_size = 1 << 16;
 static int write_pos = 0;
 static char write_buf[buf_size];
 uint32_t digits10(uint64_t v) {
